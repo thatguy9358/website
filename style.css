@@ -1,7 +1,8 @@
 .header img {
     width: 100px;
     height: 100px;
-    margin: auto
+    display:inline-block;
+    vertical-align: middle;
   }
 
   .header {
@@ -19,6 +20,7 @@
 
 .nohover {
   pointer-events: none;
+  text-decoration: none;
 }
 
 .column-home :hover{
@@ -29,19 +31,44 @@
     float: left;
     width: 33.33%;
     text-align: center;
+    text-decoration: none;
   }
   
 .column-sidebar {
   float: left;
   width: 15%;
-  text-align: center
+  text-align: center;
+  position: fixed;
 }
 
 .column-blog {
   float: left;
   width: 70%;
-  text-align: Center
+  text-align: Center;
+  margin-left: 15%;
 }
+
+.side{
+  color:black;
+  text-decoration: none;
+}
+
+.code {
+  font-family: Consolas,"courier new";
+  color: rgb(0, 0, 0);
+  background-color: #d3d3d3;
+  padding: 2px;
+  font-size: 105%;
+  display:inline-block;
+  text-align: left;
+  width: 50%
+  }
+  .list{
+    text-align: left;
+    list-style-position: inside;
+    width: 50%;
+    display: inline-block;
+  }
 
   /* Clear floats after the columns */
  .row:after {
@@ -56,3 +83,28 @@
       width: 100%;
     }
   }
+
+  .bash_img {
+    anchor-name: --myAnchor;
+  }
+
+  .container {
+    position: relative;
+    text-align: center;
+    }
+
+    .bash {
+      background-color: black;
+      color: white;
+      font-size: medium ; 
+      font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+      position-anchor: --myAnchor;
+      width: calc(anchor-size(--myAnchor) / 1.255);
+      top:328px;
+      left:calc(anchor(left) + 93px);
+      height:calc(anchor-size(height) * 0.48);
+      text-align: left;
+      position: absolute;
+      font-size:20px;
+      overflow-y: scroll;
+    }

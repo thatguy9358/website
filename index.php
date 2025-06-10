@@ -11,19 +11,21 @@
     <div style="padding:50px;"><br></div>
     <div class="row">
         <div class="column-home">
+        <a style="text-decoration:none;" href="professional/about-me.php">
             <div class="category">
                 <h2 class="nohover">Professional</h2>
                 <p class="nohover">Learn more about my professional career</p>
             </div>
         </div>
         <div class="column-home">
+        <a style="text-decoration:none;" href="writeups/landing.php">
             <div class="category">
                 <h2 class="nohover">Write Ups</h2>
                 <p class ="nohover">Write ups for online labs</p>
             </div>
         </div>
         <div class="column-home">
-            <a href="for-fun/landing.php">
+            <a style="text-decoration:none;" href="for-fun/landing.php">
             <div class="category">
                 <h2 class="nohover"> For Fun</h2>
                 <p class="nohover">Side projects I've tinkered with</p>

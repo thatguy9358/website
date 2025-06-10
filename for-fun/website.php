@@ -9,7 +9,7 @@
       <?php include '../header.php'; ?>
     </header>
     <div class="row">
-    <div class="column-sidebar">
+      <div class="column-sidebar">
         <h4>Other Projects</h4>
         <p class=><a class="side" href="https://charliehacks.computer/for-fun/magic-mirror.php">Magic Mirror</a></p>
         <p><a class="side" href="https://charliehacks.computer/for-fun/website.php">This Website</a></p>
@@ -17,8 +17,15 @@
         <p><a class="side" href="https://charliehacks.computer/writeups/landing.php">Lab Writepups</a></p>
         <p><a class="side" href="https://charliehacks.computer/professional/about-me.php">About Me</a></p>
       </div>
-      <div class="column-blog">
-        <h1>Side Projects</h1>
-        <p>A collection of different projects I've completed in an attempt to learn something new and do something fun</p>
+      <div style="width:15%;float:left;">
+        <!-- intentionally blank -->
       </div>
-    </div>
+      <div class="column-blog">/p
+        <H1>Charliehacks.computer</H1>    
+        <p>
+            This website was created as a personal project. I've written all the HTML and CSS code used for the site. Would it look better using a CMS... yes. Would it be quicker to use a CMS ... yes. But I viewed this as an opportunity to learn a little more about web development, and it's been intersting do far.
+        </p>
+        <p>
+            Plus, I got to make a fun pun with the URL.
+        </p>
+      </div>
