@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Charlie Hacks</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+          $('#header').load('header.html');
+          $('#footer').load('footer.html');
+          $('#writeup-menu').load('writeup-menu.html');
+        });
+      </script>
+  </head>
+  <body>
+    <div id="header"></div>
+    <div class="row">
+    <div id="writeup-menu"></div>
+      <div class="column-blog">
+        <h1>HTB: Heal</h1>
+        <h2>Enumeration</h2>
+        <p>Run nmap to identify open ports on the target</p>
+        <p class="code">nmap -p- 10.10.11.46 -o 46_nmap_allports</p>
+        <img src="img/heal/nmap1.png">
+        <p>Results show that port 22 and 80 are the only TCP ports open.<br>
+        Run a more detailed scan on open ports and start a UDP port scan</p>
+        <p class="code">nmap -sC -sV -p 22,80 10.10.11.46 -o nmap_46_services</p>
+        <img src="img/heal/nmap2.png">
+        <p class="code">sudo nmap -sU --top-ports 500 10.10.11.46 -o nmap_46_udp</p>
+        <img src="img/heal/nmap3">
+        <p>TCP scan returned versions for OpenSSH and nginx web server. UDP scan returned ports 68 and 5353 open. Decided to focus on open TCP ports to start.</p>
+        <p> There were no publicly available exploits for the OpenSSH or nginx software versions running</p>
+        <p> I Turned my foucs towards the web application</p>
+        <p>I had to add heal.htb to /etc/hosts</p>
+        <img src="img/heal/webpage1.png">
+        <p>The initial web page is a login screen. Create an account to browse the application.</p>
+        <img src="img/heal/webpage2.png">
+      </div>
+    </div>

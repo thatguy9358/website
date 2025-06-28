@@ -3,30 +3,35 @@
   <head>
     <title>Charlie Hacks</title>
     <link rel="stylesheet" href="/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+          $('#header').load('header.html');
+          $('#footer').load('footer.html');
+        });
+      </script>
   </head>
   <body>
-    <header>
-      <?php include 'header.php'; ?>
-    </header>
+    <div id="header"></div>
     <div style="padding:50px;"><br></div>
     <div class="row">
         <div class="column-home">
-        <a style="text-decoration:none;" href="professional/about-me.php">
-            <div class="category">
+        <a style="text-decoration:none;" href="about-me.html">
+            <div class="category" style="background:linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url('img/circut.webp');">
                 <h2 class="nohover">Professional</h2>
                 <p class="nohover">Learn more about my professional career</p>
             </div>
         </div>
         <div class="column-home">
-        <a style="text-decoration:none;" href="writeups/landing.php">
-            <div class="category">
+        <a style="text-decoration:none;" href="writeups.html">
+            <div class="category" style="background-image: url('img/kali-trail.svg');">
                 <h2 class="nohover">Write Ups</h2>
                 <p class ="nohover">Write ups for online labs</p>
             </div>
         </div>
         <div class="column-home">
-            <a style="text-decoration:none;" href="for-fun/landing.php">
-            <div class="category">
+            <a style="text-decoration:none;" href="projects.html">
+            <div class="category" style="background-image: url('img/hello.png');">
                 <h2 class="nohover"> For Fun</h2>
                 <p class="nohover">Side projects I've tinkered with</p>
             </div>
