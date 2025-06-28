@@ -16,11 +16,14 @@
   background-color:black;
   color:white;
   padding:100px 10px;
+  background-repeat: no-repeat;
+  background-size:cover;
 }
 
 .nohover {
   pointer-events: none;
   text-decoration: none;
+  filter:brightness(100%);
 }
 
 .column-home :hover{
