@@ -51,6 +51,10 @@
   margin-left: 15%;
 }
 
+.column-blog img {
+  max-width: 100%;
+}
+
 .side{
   color:black;
   text-decoration: none;
@@ -64,7 +68,8 @@
   font-size: 105%;
   display:inline-block;
   text-align: left;
-  width: 50%
+  width: 75%;
+  word-wrap:break-word;
   }
   .list{
     text-align: left;
