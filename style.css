@@ -8,6 +8,16 @@
   .header {
     text-align: Center;
     background-color: rgb(17, 153, 22);
+    position:fixed;
+    left:0;
+    right:0;
+    top:0; 
+    margin:0;
+    width:100%;
+    margin: 0;
+  }
+  body{
+    height:100vh;
   }
   
 .category {
@@ -33,6 +43,7 @@
 .column-home {
     float: left;
     width: 33.33%;
+    height:100%;
     text-align: center;
     text-decoration: none;
   }
@@ -84,6 +95,13 @@
     display: table;
     clear: both;
   }
+
+.responsive{
+  width:45%;
+  max-width: 50px;
+  height: auto;
+  padding: 10px;
+}
 
   /* Responsive layout - makes the three columns stack on top of each other instead of next to each other on smaller screens (600px wide or less) */
 @media screen and (max-width: 600px) {
