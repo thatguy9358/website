@@ -4,18 +4,17 @@
     display:inline-block;
     vertical-align: middle;
   }
-
-  .header {
+.header {
     text-align: Center;
     background-color: rgb(17, 153, 22);
-    position:fixed;
+    position: fixed;
     left:0;
     right:0;
     top:0; 
     margin:0;
     width:100%;
     margin: 0;
-  }
+}
   body{
     height:100vh;
   }
