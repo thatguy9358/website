@@ -6,8 +6,8 @@
   }
 .header {
     text-align: Center;
-    background-color: rgb(17, 153, 22);
     position: fixed;
+    background-color: rgb(17, 153, 22);
     left:0;
     right:0;
     top:0; 
