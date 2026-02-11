@@ -63,6 +63,8 @@
 
 .column-blog img {
   max-width: 100%;
+  max-height: 50vh;
+  padding: 10px;
 }
 
 .side{

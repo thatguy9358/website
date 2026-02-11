@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Charlie Hacks</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function() {
+          $('#header').load('header.html');
+          $('#footer').load('footer.html');
+          $('#writeup-menu').load('writeup-menu.html');
+        });
+      </script>
+  </head>
+  <body>
+    <div id="header"></div>
+    <div class="row" style="margin-top:120px">
+    <div id="writeup-menu"></div>
+      <div class="column-blog">
+        <h1>HTB: Cap</h1>
+        <img src="img/cap/box.png">
+        <p>Cap is an easy Linux box that focuses on abusing a web application flaw to gain a foothold and a Linux capability to escalate to root.</p>
+        <h2>Enumeration</h2>
+        <p>Start with running nmap to identify open ports</p>
+        <p class="code">sudo nmap -p- -sT -Pn -T 4 10.129.11.119 -o nmap_119_allport</p>
+        <img src="img/cap/nmap.png">
+        <p>Three ports returned open. I quckly tried to access ftp by using the login anonymous:anonymous and anonymous: but both failed.
+            turned my attention toward the web application. Opened the application and saw the following page.
+        </p>
+        <img src="img/cap/site1.png">
+        <p>The website is a security dashboard for the system. We're auatomatically logged in as the user Nathan. Start to manually enumarate the site before running any tools. There's a side menu with a few functions</p>
+        <img src="img/cap/site2.png">
+        <p>IP Config and Network Status showed the output of <b>ifconfig</b> and <b>netstat</b> on the underlying OS, but did not have any detail of note. The Security Snapshot tab
+            created a pcap capture and allowed the user to download the file.
+        </p>
+        <img src="img/cap/site3.png">
+        <p>After a few more captures I noted that the number in the URL incremented every time. I tried accesing the next number in the sequence, but files were not found. Then I tried going the other way and accessing /data/0 since we started at /data/1 on the first capture</p>
+        <img src="img/cap/site4.png">
+        <p>This showed stats on a previously captured pcap file.</p>
+        <h2>Exploit</h2>
+        <p>Download the pcap file using the download button and view the file. I used wireshark out of conveincence.</p>
+        <img src="img/cap/pcap.png">
+        <p>Plaintext credntials are found in the pcap file courtesy of the FTP protocol. Recovered the password for the user <b>nathan</b>. Try and use them to log in to the other network protocols accessible.
+         They work for both FTP and SSH. I decided to proceed with SSH since it has more capabilities and retrived the user.txt</p>
+         <p class="code">ssh nathan@10.129.11.119</p>
+         <img src="img/cap/user.png">
+         <h2>Privilege Escalation</h2>
+         <p>Started to do some manual enumeration. Didn't find anything enumarting environment variables/history, cronjobs, SUID/SGID binaries, or sudo. Check binaries with assigned capapbilties</p>
+         <p class="code">/usr/sbin/getcap -r / 2>/dev/null</p>
+         <img src="img/cap/cap.png">
+         <p>Notice python3.8 has a few capabilties and is usually not part of the default programs with capabilities. CAP_SETUID allows the program to arbitarily set the process's UID. We can check <a href gtfobins.org>gtfobins</a> to see if there are any quick wins</p>
+         <img src="img/cap/gtfo.png">
+         <p>Use the command supplie by gtfobins to escalate to root. Note python is run using python3 on the box</p>
+         <p class="code">python3 -c 'import os; os.setuid(0); os.execl("/bin/sh", "sh")'</p>
+         <img src="img/cap/root.png">
+         <p>The exploit works and we're now root. From here we can access root.txt and compelte the lab</p>
+         <h2>Takeaways</h2>
+         <p>This box was a good introduction to abusing linux capabilties. Previously I had only had a few sparse notes on capabilties, so it was good to get some hands on experience.</p>
+
+
+        </div>
+        </div>
+        </body>
